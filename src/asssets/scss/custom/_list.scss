@@ -1,0 +1,11 @@
+.players-list {
+  tbody {
+    tr {
+      cursor: pointer;
+      transition: background 0.3s linear;
+      &:hover {
+        background-color: #fbfbfb;
+      }
+    }
+  }
+}
