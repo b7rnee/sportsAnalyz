@@ -22,21 +22,9 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import ShotChart from './shotChart';
 import { mainListItems } from './listitems';
 import axios from 'axios'
+import Analyz from './analyz';
 
 import PlayerList from './playerList';
-
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-      </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const drawerWidth = 240;
 
@@ -133,7 +121,8 @@ export default function Dashboard() {
             if (res.ok) {
                 return res.json()
             }
-        }).then((res) => { setPlayers(res) })
+        }).then((res) => {
+            setPlayers(res)})
     }, []);
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -195,21 +184,18 @@ export default function Dashboard() {
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
-                        {/* Chart */}
                         <Grid item xs={12} md={8} lg={9}>
                             <Paper className={fixedHeightPaper}>
-                                {loading ? <CircularProgress style={{ alignItems: 'center' }} />
+                                {loading ? <CircularProgress style={{ color:"#25d56f",alignItems: 'center' }} />
                                     : <ShotChart srcImage={sourceImage} players={players} />
                                 }
                             </Paper>
                         </Grid>
-                        {/* Recent Deposits */}
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className={fixedHeightPaper}>
-                                {/* <Deposits /> */}
+                                <Analyz />
                             </Paper>
                         </Grid>
-                        {/* Recent Orders */}
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
                                 <PlayerList
@@ -221,7 +207,7 @@ export default function Dashboard() {
                         </Grid>
                     </Grid>
                     <Box pt={4}>
-                        <Copyright />
+                     
                     </Box>
                 </Container>
             </main>

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from flask import Flask
 import json
 from nba_api.stats.static import players
-from nba_api.stats.endpoints import playercareerstats
+from nba_api.stats.endpoints import playercareerstats,playervsplayer
 from nba_api.stats.endpoints import shotchartdetail
 from matplotlib.patches import Circle, Rectangle, Arc
 import seaborn as sns
@@ -14,11 +14,11 @@ app = Flask(__name__)
 
 @app.route('/api', methods=['GET'])
 def index():
-    return json.dumps(players.get_players())
+    return json.dumps(players.get_active_players())
 
 
 def get_player_shortchartdetail(player_name, season_id):
-    nba_players = players.get_players()
+    nba_players = players.get_active_players()
     player_dict = list(
         filter(lambda name: name['full_name'] == player_name, nba_players))
 
@@ -85,9 +85,9 @@ def shot_chart(data,title="", color="b", cmap=None,
     x_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_X']
     y_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_Y']
     
-    ax.scatter(x_missed,y_missed, c='#5A7A7F', marker="o",s =120, linewidths = 2)
+    ax.hexbin(x_missed,y_missed,mincnt=1,gridsize=50,color="#5A7A7F")
     
-    ax.scatter(x_made,y_made, facecolors='none',c  = '#3afc8e', marker="o",s =100, linewidths = 2)
+    ax.hexbin(x_made,y_made,mincnt=1,gridsize=50,color="#3afc8e",facecolor="#3afc8e")
  
     for spine in ax.spines:
         ax.spines[spine].set_lw(court_lw)
