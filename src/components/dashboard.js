@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         padding: theme.spacing(2),
-        display: 'flex',
+        display: 'flex',//
         overflow: 'auto',
         flexDirection: 'column',
     },
@@ -122,7 +122,8 @@ export default function Dashboard() {
                 return res.json()
             }
         }).then((res) => {
-            setPlayers(res)})
+            setPlayers(res)
+        })
     }, []);
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -186,7 +187,7 @@ export default function Dashboard() {
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={8} lg={9}>
                             <Paper className={fixedHeightPaper}>
-                                {loading ? <CircularProgress style={{ color:"#25d56f",alignItems: 'center' }} />
+                                {loading ? <CircularProgress style={{ color: "#25d56f", alignItems: 'center' }} />
                                     : <ShotChart srcImage={sourceImage} players={players} />
                                 }
                             </Paper>
@@ -207,7 +208,7 @@ export default function Dashboard() {
                         </Grid>
                     </Grid>
                     <Box pt={4}>
-                     
+
                     </Box>
                 </Container>
             </main>

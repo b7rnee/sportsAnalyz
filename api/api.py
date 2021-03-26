@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from flask import Flask
 import json
+import numpy as np
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats,playervsplayer
 from nba_api.stats.endpoints import shotchartdetail
@@ -8,6 +9,7 @@ from matplotlib.patches import Circle, Rectangle, Arc
 import seaborn as sns
 import io
 import base64
+import imp
 
 app = Flask(__name__)
 
@@ -39,6 +41,7 @@ def get_player_shortchartdetail(player_name, season_id):
 @app.route('/shotChartDetail/<string:full_name>', methods=['GET'])
 def get_shot_detail(full_name):
     playerStat,career = get_player_shortchartdetail(full_name, '2019-20')
+    plt.clf()
     shot_chart(playerStat , title = full_name)
     img = io.BytesIO()
     plt.rcParams['figure.figsize'] = (12,11)
@@ -50,7 +53,6 @@ def get_shot_detail(full_name):
     plot_url = base64.b64encode(img.getvalue()).decode()
     img.seek(0)
     img.truncate(0)
-    # return '<img src="data:image/png;base64,{}">'.format(plot_url)
     return {"url" : "data:image/png;base64,{}".format(plot_url),"info":career.to_json()}
 
 
@@ -60,7 +62,6 @@ def shot_chart(data,title="", color="b", cmap=None,
                court_color="gray", court_lw=1, outer_lines=False,
                flip_court=False,gridsize=None, ax=None,
                despine=False ):
- 
     if ax is None:
         ax = plt.gca()
 
@@ -84,10 +85,15 @@ def shot_chart(data,title="", color="b", cmap=None,
     
     x_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_X']
     y_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_Y']
+    color_map = plt.cm.Spectral_r
+
+    # ax.hexbin(x_missed,y_missed,mincnt=1,gridsize=50,color="#5A7A7F", cmap=color_map)
+    ax.scatter(x_missed,y_missed, c='#12275e', marker="x",s =60, linewidths = 2)
+    ax.scatter(x_made,y_made,c='#3afc8e', marker="o",s =40, linewidths = 2)
+
+    # 
+    # ax.hexbin(x_made,y_made,mincnt=1,gridsize=50,color="#3afc8e", cmap=color_map)
     
-    ax.hexbin(x_missed,y_missed,mincnt=1,gridsize=50,color="#5A7A7F")
-    
-    ax.hexbin(x_made,y_made,mincnt=1,gridsize=50,color="#3afc8e",facecolor="#3afc8e")
  
     for spine in ax.spines:
         ax.spines[spine].set_lw(court_lw)

@@ -9,3 +9,20 @@
     }
   }
 }
+#orangeBox {
+  background: white;
+  color: #2a4280;
+  font-size: 2em;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+}
+.shot-chart {
+  // background-color: #2a4280;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
