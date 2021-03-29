@@ -10,8 +10,19 @@ import seaborn as sns
 import io
 import base64
 import imp
+from pymongo import MongoClient
 
 app = Flask(__name__)
+
+@app.route('/login', methods=['GET'])
+def login():
+    client = MongoClient('mongodb+srv://luckygaming:Lucky417@cluster0.y0wr8.mongodb.net/sports_analyz?retryWrites=true&w=majority');
+    db = client.get_database('sports_analyz');
+    teams = db.teams_collection;
+    print("TEAMSSSS",teams)
+    team = teams.find_one({"userName": 'Lakers'})
+    print("TEAAMM",team)
+    return team
 
 
 @app.route('/api', methods=['GET'])
@@ -30,10 +41,10 @@ def get_player_shortchartdetail(player_name, season_id):
     shotchartlist = shotchartdetail.ShotChartDetail(team_id=career_df[career_df['SEASON_ID'] == season_id]['TEAM_ID'],
                                                     player_id=player_dict[0]['id'],
                                                     season_type_all_star="Regular Season",
-                                                    season_nullable='2019-20',
+                                                    season_nullable=season_id,
                                                     context_measure_simple="FGA",
                                                     ).get_data_frames()
-    return shotchartlist[0],shotchartlist[1];
+    return shotchartlist[0],career_df;
     
     
 

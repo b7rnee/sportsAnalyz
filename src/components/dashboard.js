@@ -115,6 +115,7 @@ export default function Dashboard() {
     const [open, setOpen] = React.useState(true);
     const [players, setPlayers] = React.useState([]);
     const [sourceImage, setSrcImage] = useState("");
+    const [playerInfo, setPlayerInfo] = React.useState(new Array())
     const [loading, setLoading] = React.useState(false)
     useEffect(() => {
         fetch('/api').then((res) => {
@@ -136,7 +137,19 @@ export default function Dashboard() {
         setLoading(true)
         axios.get(`/shotChartDetail/${full_name}`).then((res) => {
             let test = res.data.url;
-            // let info = JSON.parse(res.data.info)
+            let info = JSON.parse(res.data.info)
+            let i = Object.keys(info.SEASON_ID).find((el, index) => {
+                return info.SEASON_ID[String(index)] == '2019-20'
+            })
+            let dat = [];
+            dat.push(info.PTS[String(i)])
+            dat.push(info.FGA[String(i)])
+            dat.push(info.FGM[String(i)])
+            dat.push(info.FG_PCT[String(i)])
+            dat.push(info.FG3A[String(i)])
+            dat.push(info.FG3M[String(i)])
+            dat.push(info.FG3_PCT[String(i)])
+            setPlayerInfo(dat)
             setSrcImage(test)
         }).finally(() => setLoading(false))
     }
@@ -156,7 +169,7 @@ export default function Dashboard() {
                         <MenuIcon />
                     </IconButton>
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                        Data analysis and Machine Learning
+                        Сагсан бөмбөгийн өгөгдөл шинжилгээ болон таамаглал
                     </Typography>
                     <IconButton color="inherit">
                         <Badge badgeContent={4} color="secondary">
@@ -194,7 +207,8 @@ export default function Dashboard() {
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className={fixedHeightPaper}>
-                                <Analyz />
+                                {loading ? <CircularProgress style={{ color: "#25d56f", alignItems: 'center' }} /> :
+                                    <Analyz info={playerInfo} />}
                             </Paper>
                         </Grid>
                         <Grid item xs={12}>

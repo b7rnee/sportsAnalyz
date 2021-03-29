@@ -12,13 +12,13 @@ export const mainListItems = (
             <ListItemIcon>
                 <EqualizerIcon htmlColor="#25d56f" />
             </ListItemIcon>
-            <ListItemText primary="Analyz" />
+            <ListItemText primary="Дата анализ" />
         </ListItem>
         <ListItem button>
             <ListItemIcon>
                 <TimelineIcon htmlColor="#25d56f" />
             </ListItemIcon>
-            <ListItemText primary="Predict" />
+            <ListItemText primary="Таамаглал" />
         </ListItem>
     </div>
 );
