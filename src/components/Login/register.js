@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -48,7 +48,7 @@ export default function SignUp() {
                 <Typography component="h1" variant="h5">
                     Бүртгүүлэх
         </Typography>
-                <form className={classes.form} noValidate>
+                <div className={classes.form} >
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -99,7 +99,30 @@ export default function SignUp() {
 
                     </Grid>
                     <Button
-                        type="submit"
+                        onClick={() => {
+                            const headers = {
+                                'Content-Type': 'application/json',
+                            };
+                            let data = {
+                                teamName: 'Phila',
+                                userName: 'sixers',
+                                password: 'Lucky417@',
+                                players: [{
+                                    playerName: 'Kobe Bryant',
+                                    playerRole: 'SG',
+                                    playerNickname: 'Black Mamba',
+                                }]
+                            }
+                            axios.post('/register/sixers', data,
+                                { headers: headers }).then((res) => {
+                                    let data = res
+                                    debugger
+                                    // history.push("/home");
+                                }).catch((error) => {
+                                    // setIsOpen(true)
+                                })
+
+                        }}
                         fullWidth
                         variant="contained"
                         color="primary"
@@ -114,7 +137,7 @@ export default function SignUp() {
               </Link>
                         </Grid>
                     </Grid>
-                </form>
+                </div>
             </div>
         </Container>
     );

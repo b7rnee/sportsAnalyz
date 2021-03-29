@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import SnackBar from '@material-ui/core/Snackbar';
 import axios from 'axios';
+import { Base64 } from 'js-base64'
 import { Alert } from '@material-ui/lab'
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -106,13 +107,13 @@ export default function Login(props) {
                         className={classes.submit}
                         onClick={() => {
                             setLoading(true)
-                            axios.get(`/login/${values.username}`).then((res) => {
-                                if (res.data?.res == 'success') {
-                                    history.push("/home");
-                                } else {
-                                    setIsOpen(true)
-                                }
-                            }).catch(() => {
+                            // let password = Base64.encode(values.password)
+                            axios.get(`/login/${values.username}/${values.password}`).then((res) => {
+                                let data = res.data.res
+                                history.push("/home");
+
+                            }).catch((error) => {
+                                setIsOpen(true)
                             }).finally(() => setLoading(false))
                         }}
                     >

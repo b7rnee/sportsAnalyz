@@ -24,7 +24,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import axios from 'axios'
-
+import Button from '@material-ui/core/Button'
+import { Upload } from 'antd'
 
 const drawerWidth = 240;
 
@@ -189,14 +190,12 @@ export default function Predict() {
                             <ListItemText primary="Дата анализ" />
                         </ListItem>
                     </Link>
-                    <Link style={{ color: "black" }} href="/predict" underline="none">
-                        <ListItem button>
-                            <ListItemIcon>
-                                <TimelineIcon htmlColor="#25d56f" />
-                            </ListItemIcon>
-                            <ListItemText color="black" primary="Таамаглал" />
-                        </ListItem>
-                    </Link>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <TimelineIcon htmlColor="#25d56f" />
+                        </ListItemIcon>
+                        <ListItemText color="black" primary="Таамаглал" />
+                    </ListItem>
                 </div></List>
 
             </Drawer>
@@ -205,18 +204,41 @@ export default function Predict() {
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={8} lg={9}>
-                            <Paper className="paper">
-                                <div>dsfsdf</div>
+                            <Paper style={{
+                                display: 'flex',
+                                justifyContent: "space-between",
+                                flexDirection: 'column'
+                            }} className="paper">
+                                <img width={550} height={400}
+                                    src="https://assets.justinmind.com/wp-content/uploads/2020/05/charts-ui-kit-dashboard-design-tips-example.png"></img>
+                                <div width={50} height={50}>Result</div>
                             </Paper>
+
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
-                            <Paper className="paper">
-                                <div>File upload section</div>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Paper className="paper">
-                                <div>Result</div>
+                            <Paper className="paper" >
+
+                                <Button onClick={() => {
+
+                                }} style={{ marginTop: 400, backgroundColor: '#25d56f', color: 'white' }} variant="contained" color="#25d56f">
+                                    File upload section
+                                    <input
+                                        hidden
+                                        type="file"
+                                        onChange={(event) => {
+                                            var file = event.target.files[0];
+                                            const reader = new FileReader();
+                                            var url = reader.readAsDataURL(file);
+
+                                            reader.onloadend = function (e) {
+
+                                            }.bind(this);
+                                            console.log(url);
+                                        }}
+                                    />
+                                </Button>
+
+
                             </Paper>
                         </Grid>
                     </Grid>

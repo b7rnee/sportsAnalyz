@@ -10,6 +10,8 @@ import seaborn as sns
 import io
 import base64
 from flask_pymongo import PyMongo
+from bson import ObjectId
+
 
 app = Flask(__name__)
 
@@ -18,17 +20,30 @@ app.config['MONGO_URI'] = 'mongodb+srv://luckygaming:Lucky417@cluster0.y0wr8.mon
 
 mongo = PyMongo(app)
 
-@app.route('/login/<string:username>', methods=['GET'])
-def login(username):
-    # users = mongo.db.teams_collection
-    if username == 'Lakers':
-        return {
-            "res":"success"
-        }
+@app.route('/login/<string:username>/<string:password>', methods=['GET'])
+def login(username,password):
+    users = mongo.db.teams_collection
+    login_user = users.find_one({'userName':username})
+    if login_user:
+        if(password == login_user['password']):
+            return {
+                "res": json.dumps(login_user['players'])
+            }, 200
     return {
-            "res":"invalid"
-        }
+        "res": "Invalid username and password"
+    }, 400
 
+@app.route('/register/<string:username>', methods=['POST','GET'])
+def register(username):
+    if request.method == 'POST':
+        users = mongo.db.teams_collection
+        register_user = users.find_one({'userName':username})
+
+        if register_user is None:
+            print("JSON",request)
+            users.insert_one(request.json)
+            return "succes"
+        return "That user already exists"
 
 @app.route('/api', methods=['GET'])
 def index():

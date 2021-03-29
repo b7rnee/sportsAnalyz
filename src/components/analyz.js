@@ -22,7 +22,7 @@ export default function Analyz(props) {
     }, [props]);
     return (
         <React.Fragment>
-            <Title>2019-2020 оны статистик</Title>
+            <Title>2019-20 оны статистик</Title>
             <Typography component="p" variant="h6">
                 PTS: {props?.info[0]}
             </Typography>

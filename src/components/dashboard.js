@@ -185,15 +185,12 @@ export default function Dashboard() {
                 </div>
                 <Divider />
                 <List><div>
-                    <Link style={{ color: "black" }} href="/home" underline="none">
-                        <ListItem button>
-                            <ListItemIcon>
-                                <EqualizerIcon htmlColor="#25d56f" />
-                            </ListItemIcon>
-                            <ListItemText primary="Дата анализ" />
-                        </ListItem>
-                    </Link>
-
+                    <ListItem button>
+                        <ListItemIcon>
+                            <EqualizerIcon htmlColor="#25d56f" />
+                        </ListItemIcon>
+                        <ListItemText primary="Дата анализ" />
+                    </ListItem>
                     <Link style={{ color: "black" }} href="/predict" underline="none">
                         <ListItem button>
                             <ListItemIcon>
