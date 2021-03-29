@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from flask import Flask
+from flask import Flask, request
 import json
 import numpy as np
 from nba_api.stats.static import players
@@ -9,20 +9,25 @@ from matplotlib.patches import Circle, Rectangle, Arc
 import seaborn as sns
 import io
 import base64
-import imp
-from pymongo import MongoClient
+from flask_pymongo import PyMongo
 
 app = Flask(__name__)
 
-@app.route('/login', methods=['GET'])
-def login():
-    client = MongoClient('mongodb+srv://luckygaming:Lucky417@cluster0.y0wr8.mongodb.net/sports_analyz?retryWrites=true&w=majority');
-    db = client.get_database('sports_analyz');
-    teams = db.teams_collection;
-    print("TEAMSSSS",teams)
-    team = teams.find_one({"userName": 'Lakers'})
-    print("TEAAMM",team)
-    return team
+app.config['MONGO_DBNAME'] = 'sports_analyz';
+app.config['MONGO_URI'] = 'mongodb+srv://luckygaming:Lucky417@cluster0.y0wr8.mongodb.net/sports_analyz?retryWrites=true&w=majority';
+
+mongo = PyMongo(app)
+
+@app.route('/login/<string:username>', methods=['GET'])
+def login(username):
+    # users = mongo.db.teams_collection
+    if username == 'Lakers':
+        return {
+            "res":"success"
+        }
+    return {
+            "res":"invalid"
+        }
 
 
 @app.route('/api', methods=['GET'])

@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
@@ -19,17 +18,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { CircularProgress } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import ShotChart from './shotChart';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import { mainListItems } from './listitems';
 import axios from 'axios'
-import Analyz from './analyz';
 
-import PlayerList from './playerList';
 
 const drawerWidth = 240;
 
@@ -104,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Dashboard() {
+export default function Predict() {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
     const [players, setPlayers] = React.useState([]);
@@ -186,6 +181,7 @@ export default function Dashboard() {
                 <Divider />
                 <List><div>
                     <Link style={{ color: "black" }} href="/home" underline="none">
+
                         <ListItem button>
                             <ListItemIcon>
                                 <EqualizerIcon htmlColor="#25d56f" />
@@ -193,7 +189,6 @@ export default function Dashboard() {
                             <ListItemText primary="Дата анализ" />
                         </ListItem>
                     </Link>
-
                     <Link style={{ color: "black" }} href="/predict" underline="none">
                         <ListItem button>
                             <ListItemIcon>
@@ -211,30 +206,21 @@ export default function Dashboard() {
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={8} lg={9}>
                             <Paper className="paper">
-                                {loading ? <CircularProgress style={{ color: "#25d56f", alignItems: 'center' }} />
-                                    : <ShotChart srcImage={sourceImage} players={players} />
-                                }
+                                <div>dsfsdf</div>
                             </Paper>
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className="paper">
-                                {loading ? <CircularProgress style={{ color: "#25d56f", alignItems: 'center' }} /> :
-                                    <Analyz info={playerInfo} />}
+                                <div>File upload section</div>
                             </Paper>
                         </Grid>
                         <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                                <PlayerList
-                                    getPlayerChart={(name) => {
-                                        shotChartDraw(name)
-                                    }}
-                                    players={players} />
+                            <Paper className="paper">
+                                <div>Result</div>
                             </Paper>
                         </Grid>
                     </Grid>
-                    <Box pt={4}>
 
-                    </Box>
                 </Container>
             </main>
         </div>

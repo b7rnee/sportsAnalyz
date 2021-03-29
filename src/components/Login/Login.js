@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,8 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import axios from 'axios'
-
+import SnackBar from '@material-ui/core/Snackbar';
+import axios from 'axios';
+import { Alert } from '@material-ui/lab'
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -38,8 +39,12 @@ const useStyles = makeStyles((theme) => ({
 export default function Login(props) {
     const classes = useStyles();
     const history = useHistory();
+    const [isOpen, setIsOpen] = useState(false)
     const [loading, setLoading] = React.useState(false)
-
+    const [values, setValues] = React.useState({
+        username: '',
+        password: '',
+    })
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -49,16 +54,28 @@ export default function Login(props) {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Нэвтрэх
-        </Typography>
-                <form className={classes.form} noValidate>
+               </Typography>
+                <SnackBar autoHideDuration={10000}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    open={isOpen} onClose={() => {
+                        setIsOpen(false)
+
+                    }}>
+                    <Alert severity="error" >Нууц үг эсвэл нэвтрэх нэр буруу байна</Alert>
+                </SnackBar>
+                <div className={classes.form} noValidate>
                     <TextField
                         variant="outlined"
                         margin="normal"
                         required
                         fullWidth
+                        value={values.username}
                         id="username"
                         label="Нэвтрэх нэр"
                         name="username"
+                        onChange={(event) => {
+                            setValues({ ...values, username: event.target.value })
+                        }}
                         autoComplete="username"
                         autoFocus
                     />
@@ -67,10 +84,14 @@ export default function Login(props) {
                         margin="normal"
                         required
                         fullWidth
+                        value={values.password}
                         name="password"
                         label="Нууц үг"
                         type="password"
                         id="password"
+                        onChange={(event) => {
+                            setValues({ ...values, password: event.target.value })
+                        }}
                         autoComplete="current-password"
                     />
                     <FormControlLabel
@@ -84,16 +105,15 @@ export default function Login(props) {
                         color="primary"
                         className={classes.submit}
                         onClick={() => {
-                            history.push('home');
-                            // setLoading(true)
-                            // axios.get('/login').then((res) => {
-                            //     let test = res;
-                            //     debugger;
-                            //     history.push("/home");
-                            // }).catch(() => {
-                            //     debugger;
-                            // }).finally(() => setLoading(false))
-
+                            setLoading(true)
+                            axios.get(`/login/${values.username}`).then((res) => {
+                                if (res.data?.res == 'success') {
+                                    history.push("/home");
+                                } else {
+                                    setIsOpen(true)
+                                }
+                            }).catch(() => {
+                            }).finally(() => setLoading(false))
                         }}
                     >
                         Нэвтрэх
@@ -105,12 +125,12 @@ export default function Login(props) {
               </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link href="/register" variant="body2">
                                 {"Бүртгүүлэх"}
                             </Link>
                         </Grid>
                     </Grid>
-                </form>
+                </div>
             </div>
         </Container>
     );
