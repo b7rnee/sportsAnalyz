@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import SnackBar from '@material-ui/core/Snackbar';
 import axios from 'axios';
-import { Base64 } from 'js-base64'
+import { AuthContext } from './AuthContext'
 import { Alert } from '@material-ui/lab'
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -45,7 +45,8 @@ export default function Login(props) {
     const [values, setValues] = React.useState({
         username: '',
         password: '',
-    })
+    });
+    const { auth, setAuth } = useContext(AuthContext)
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -109,7 +110,8 @@ export default function Login(props) {
                             setLoading(true)
                             // let password = Base64.encode(values.password)
                             axios.get(`/login/${values.username}/${values.password}`).then((res) => {
-                                let data = res.data.res
+                                let data = res.data.res;
+                                setAuth(true)
                                 history.push("/home");
 
                             }).catch((error) => {

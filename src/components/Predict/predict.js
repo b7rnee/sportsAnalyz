@@ -209,8 +209,8 @@ export default function Predict() {
                                 justifyContent: "space-between",
                                 flexDirection: 'column'
                             }} className="paper">
-                                <img width={550} height={400}
-                                    src="https://assets.justinmind.com/wp-content/uploads/2020/05/charts-ui-kit-dashboard-design-tips-example.png"></img>
+                                <img width={730} height={420}
+                                    src="http://www.bleathem.ca/patternfly-org/pattern-library/data-visualization/line-chart/img/line-chart.png"></img>
                                 <div width={50} height={50}>Result</div>
                             </Paper>
 
