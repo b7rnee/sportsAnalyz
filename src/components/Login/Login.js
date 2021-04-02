@@ -16,6 +16,7 @@ import SnackBar from '@material-ui/core/Snackbar';
 import axios from 'axios';
 import { AuthContext } from './AuthContext'
 import { Alert } from '@material-ui/lab'
+import useLoader from '../../hooks/useLoader';
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -46,7 +47,8 @@ export default function Login(props) {
         username: '',
         password: '',
     });
-    const { auth, setAuth } = useContext(AuthContext)
+    const { auth, setAuth } = useContext(AuthContext);
+    const [loader, showLoader, hideLoader] = useLoader();
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -107,16 +109,17 @@ export default function Login(props) {
                         color="primary"
                         className={classes.submit}
                         onClick={() => {
-                            setLoading(true)
+                            showLoader()
+                            // setLoading(true)
                             // let password = Base64.encode(values.password)
                             axios.get(`/login/${values.username}/${values.password}`).then((res) => {
                                 let data = res.data.res;
-                                setAuth(true)
-                                history.push("/home");
+                                // setAuth(true)
+                                // history.push("/home");
 
                             }).catch((error) => {
                                 setIsOpen(true)
-                            }).finally(() => setLoading(false))
+                            }).finally(() => hideLoader())
                         }}
                     >
                         Нэвтрэх
@@ -135,6 +138,7 @@ export default function Login(props) {
                     </Grid>
                 </div>
             </div>
+            {loader}
         </Container>
     );
 }

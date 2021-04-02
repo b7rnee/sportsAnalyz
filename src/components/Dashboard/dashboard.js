@@ -19,17 +19,17 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { CircularProgress } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import ShotChart from './shotChart';
+import ShotChart from '../Chart/shotChart';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import { mainListItems } from './listitems';
+import { mainListItems } from '../Header/listitems';
 import axios from 'axios'
-import Analyz from './analyz';
+import Analyz from '../Analyz/analyz';
 
-import PlayerList from './playerList';
+import PlayerList from '../PlayerList/playerList';
 
 const drawerWidth = 240;
 

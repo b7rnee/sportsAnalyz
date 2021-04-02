@@ -2,8 +2,8 @@ import './App.scss';
 import React, { useState, useMemo } from 'react';
 import { Router, Route, Switch } from 'react-router-dom';
 import { renderRoutes } from 'react-router-config'
-import Header from './components/header';
-import Dashboard from './components/dashboard';
+import Header from './components/Header/header';
+import Dashboard from './components/Dashboard/dashboard';
 import routes from './boot/routes';
 import Predict from './components/Predict/predict'
 import SignUp from './components/Login/register';

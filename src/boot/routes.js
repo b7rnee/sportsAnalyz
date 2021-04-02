@@ -1,7 +1,7 @@
 import React from 'react';
 import PrivateRoutes from './privateRoutes';
 import Login from '../components/Login/Login';
-import Dashboard from '../components/dashboard';
+import Dashboard from '../components/Dashboard/dashboard';
 import Predict from '../components/Predict/predict'
 const routes = [
     {

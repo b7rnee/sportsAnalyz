@@ -1,6 +1,6 @@
 import React from 'react';
 import { DataGrid } from '@material-ui/data-grid'
-import Title from './title';
+import Title from '../Header/title';
 
 
 export default function PlayerList(props) {
