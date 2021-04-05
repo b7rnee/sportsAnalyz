@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,9 +15,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import SnackBar from '@material-ui/core/Snackbar';
 import axios from 'axios';
-import { AuthContext } from './AuthContext'
 import { Alert } from '@material-ui/lab'
-import useLoader from '../../hooks/useLoader';
+import { ACTIONS } from '../../actions';
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -36,19 +36,49 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(3, 0, 2),
         backgroundColor: '#25d56f'
     },
+    root: {
+        '&$error': {
+            color: 'red'
+        },
+        '& .MuiTextField-root': {
+            margin: theme.spacing(1),
+            width: 200,
+        },
+    }
 }));
 
 export default function Login(props) {
     const classes = useStyles();
-    const history = useHistory();
     const [isOpen, setIsOpen] = useState(false)
-    const [loading, setLoading] = React.useState(false)
+    const history = useHistory()
     const [values, setValues] = React.useState({
         username: '',
+        validUsername: false,
         password: '',
+        validPassword: false,
     });
-    const { auth, setAuth } = useContext(AuthContext);
-    const [loader, showLoader, hideLoader] = useLoader();
+
+    const login = () => {
+        let tmp = values.username == '' || values.password == ''
+        setValues({
+            ...values, validPassword: values.password == '',
+            validUsername: values.username == ''
+        });
+
+        if (tmp) return
+
+
+
+        props.dispatch({ type: ACTIONS.BLOCK })
+        axios.get(`/login/${values.username}/${values.password}`).then((res) => {
+            history.push("/home");
+
+        }).catch((error) => {
+            setIsOpen(true)
+
+        }).finally(() => props.dispatch({ type: ACTIONS.UNBLOCK }))
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -68,25 +98,31 @@ export default function Login(props) {
                     <Alert severity="error" >Нууц үг эсвэл нэвтрэх нэр буруу байна</Alert>
                 </SnackBar>
                 <div className={classes.form} noValidate>
+
                     <TextField
+                        error={values.validUsername}
+                        helperText={values.validUsername ? 'Нэвтрэх нэр оруулна уу' : ''}
                         variant="outlined"
                         margin="normal"
                         required
                         fullWidth
                         value={values.username}
-                        id="username"
+                        id="email"
                         label="Нэвтрэх нэр"
-                        name="username"
+                        name="email"
                         onChange={(event) => {
                             setValues({ ...values, username: event.target.value })
                         }}
-                        autoComplete="username"
+                        autoComplete="email"
                         autoFocus
                     />
+
                     <TextField
+                        error={values.validPassword}
                         variant="outlined"
                         margin="normal"
                         required
+                        helperText={values.validPassword ? 'Нууц үг оруулна уу' : ''}
                         fullWidth
                         value={values.password}
                         name="password"
@@ -109,17 +145,7 @@ export default function Login(props) {
                         color="primary"
                         className={classes.submit}
                         onClick={() => {
-                            showLoader()
-                            // setLoading(true)
-                            // let password = Base64.encode(values.password)
-                            axios.get(`/login/${values.username}/${values.password}`).then((res) => {
-                                let data = res.data.res;
-                                // setAuth(true)
-                                // history.push("/home");
-
-                            }).catch((error) => {
-                                setIsOpen(true)
-                            }).finally(() => hideLoader())
+                            login()
                         }}
                     >
                         Нэвтрэх
@@ -138,7 +164,6 @@ export default function Login(props) {
                     </Grid>
                 </div>
             </div>
-            {loader}
-        </Container>
+        </Container >
     );
 }
