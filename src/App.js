@@ -1,5 +1,5 @@
 import './App.scss';
-import React, { useState, useMemo, useReducer } from 'react';
+import React, { useMemo, useReducer } from 'react';
 import { Router, Route, Switch } from 'react-router-dom';
 import Dashboard from './components/Dashboard/dashboard';
 import Predict from './components/Predict/predict'
@@ -11,16 +11,15 @@ import Loader from './components/Loader/loader';
 import { mainReducer } from './reducers'
 export const history = createBrowserHistory({ basename: '/' })
 function App() {
-  const [auth, setAuth] = useState(false);
-  const providerValue = useMemo(() => ({ auth, setAuth }), [auth, setAuth])
   const [state, dispatch] = useReducer(mainReducer, { loading: false })
+  const providerValue = useMemo(() => ({ state, dispatch }), [state, dispatch])
   return (
     <div className="App">
       <Router history={history}>
         <AuthContext.Provider value={providerValue}>
           <Switch>
             <Route history={history} path="/login">
-              <Login dispatch={dispatch} />
+              <Login />
             </Route>
             <Route path="/register">
               <SignUp history={history} />
@@ -32,7 +31,7 @@ function App() {
               <Predict history={history} />
             </Route>
             <Route history={history} exact path='/'>
-              <Login dispatch={dispatch} />
+              <Login />
             </Route>
 
           </Switch>

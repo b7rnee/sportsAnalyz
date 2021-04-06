@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import React, { useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import SnackBar from '@material-ui/core/Snackbar';
 import axios from 'axios';
+import { AuthContext } from './AuthContext'
 import { Alert } from '@material-ui/lab'
 import { ACTIONS } from '../../actions';
 const useStyles = makeStyles((theme) => ({
@@ -47,10 +47,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function Login(props) {
+export default function Login() {
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false)
-    const history = useHistory()
+    const history = useHistory();
+    const { state, dispatch } = useContext(AuthContext);
     const [values, setValues] = React.useState({
         username: '',
         validUsername: false,
@@ -64,19 +65,15 @@ export default function Login(props) {
             ...values, validPassword: values.password == '',
             validUsername: values.username == ''
         });
-
         if (tmp) return
-
-
-
-        props.dispatch({ type: ACTIONS.BLOCK })
+        dispatch({ type: ACTIONS.BLOCK })
         axios.get(`/login/${values.username}/${values.password}`).then((res) => {
             history.push("/home");
 
         }).catch((error) => {
             setIsOpen(true)
 
-        }).finally(() => props.dispatch({ type: ACTIONS.UNBLOCK }))
+        }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }))
     }
 
     return (
