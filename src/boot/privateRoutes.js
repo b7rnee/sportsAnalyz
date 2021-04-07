@@ -1,20 +1,22 @@
-import { Route, Switch } from 'react-router-dom'
-import Login from '../components/Login/Login';
+import { Redirect } from 'react-router-dom'
 import Dashboard from '../components/Dashboard/dashboard';
+import Predict from '../components/Predict/predict';
 
+const privateRoutes = [
+    {
+        path: '/home',
+        component: Dashboard,
+    },
+    {
+        path: '/predict',
+        component: Predict,
+    },
+    {
+        path: '/',
+        render: () => {
+            return <Redirect to="/home" exact></Redirect>;
+        },
+    },
+];
 
-export default function privateRoutes() {
-    return (
-        <Switch>
-            <Route exact path='/'>
-                <Login />
-            </Route>
-            <Route path="/login">
-                <Login />
-            </Route>
-            <Route path="/home">
-                <Dashboard />
-            </Route>
-        </Switch>
-    )
-}
+export default privateRoutes;
