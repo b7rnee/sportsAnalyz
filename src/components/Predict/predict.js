@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,7 +15,6 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
-import { CircularProgress } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,10 +22,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import axios from 'axios'
 import Button from '@material-ui/core/Button'
-import { Upload } from 'antd'
-
+import ReactFileReader from 'react-file-reader'
+import { AuthContext } from '../Login/AuthContext';
+import { ACTIONS } from '../../actions';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -103,45 +102,14 @@ const useStyles = makeStyles((theme) => ({
 export default function Predict() {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
-    const [players, setPlayers] = React.useState([]);
-    const [sourceImage, setSrcImage] = useState("");
-    const [playerInfo, setPlayerInfo] = React.useState(new Array())
-    const [loading, setLoading] = React.useState(false)
-    useEffect(() => {
-        fetch('/api').then((res) => {
-            if (res.ok) {
-                return res.json()
-            }
-        }).then((res) => {
-            setPlayers(res)
-        })
-    }, []);
+    const [fileData, setFileData] = React.useState();
+    const { state, dispatch } = useContext(AuthContext);
     const handleDrawerOpen = () => {
         setOpen(true);
     };
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const shotChartDraw = (full_name) => {
-        setLoading(true)
-        axios.get(`/shotChartDetail/${full_name}`).then((res) => {
-            let test = res.data.url;
-            let info = JSON.parse(res.data.info)
-            let i = Object.keys(info.SEASON_ID).find((el, index) => {
-                return info.SEASON_ID[String(index)] == '2019-20'
-            })
-            let dat = [];
-            dat.push(info.PTS[String(i)])
-            dat.push(info.FGA[String(i)])
-            dat.push(info.FGM[String(i)])
-            dat.push(info.FG_PCT[String(i)])
-            dat.push(info.FG3A[String(i)])
-            dat.push(info.FG3M[String(i)])
-            dat.push(info.FG3_PCT[String(i)])
-            setPlayerInfo(dat)
-            setSrcImage(test)
-        }).finally(() => setLoading(false))
-    }
 
     return (
         <div className={classes.root}>
@@ -217,26 +185,22 @@ export default function Predict() {
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className="paper" >
-
+                                <div className="file-info">
+                                    <span className="file-name">Filename: {fileData?.name}</span>
+                                </div>
                                 <Button onClick={() => {
+                                    dispatch({ type: ACTIONS.BLOCK })
+                                }} className="upload-file-btn">
+                                    Predict
+                                    </Button>
+                                <ReactFileReader fileTypes={[".csv", ".xlsx"]} base64={true} handleFiles={(file) => {
+                                    setFileData(file.fileList[0])
+                                }}>
+                                    <Button className="upload-file-btn">
+                                        File upload section
+                                    </Button>
+                                </ReactFileReader >
 
-                                }} style={{ marginTop: 400, backgroundColor: '#25d56f', color: 'white' }} variant="contained" color="#25d56f">
-                                    File upload section
-                                    <input
-                                        hidden
-                                        type="file"
-                                        onChange={(event) => {
-                                            var file = event.target.files[0];
-                                            const reader = new FileReader();
-                                            var url = reader.readAsDataURL(file);
-
-                                            reader.onloadend = function (e) {
-
-                                            }.bind(this);
-                                            console.log(url);
-                                        }}
-                                    />
-                                </Button>
 
 
                             </Paper>

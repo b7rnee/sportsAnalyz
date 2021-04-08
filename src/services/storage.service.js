@@ -1,22 +1,11 @@
-
-function getAccessToken() {
-    const state = localStorage.getItem('auth');
-    return state?.access_token;
-}
-
 function isAuthenticated() {
-    // const state = JSON.parse(localStorage.getItem('auth') || '');
-
-    // return state?.isAuthenticated;
-    return false
+    const state = localStorage.getItem('authData');
+    const auth = JSON.parse(state);
+    return auth?.isAuthenticated;
 }
 
 function setAuth(auth) {
-    localStorage.setItem('auth', JSON.stringify(auth));
-}
-
-function setQrCode(qrCode) {
-    localStorage.setItem('qrCode', qrCode);
+    localStorage.setItem('authData', JSON.stringify(auth));
 }
 
 function clear() {
@@ -24,9 +13,7 @@ function clear() {
 }
 
 export const storageService = {
-    getAccessToken,
     isAuthenticated,
     setAuth,
-    setQrCode,
     clear,
 };

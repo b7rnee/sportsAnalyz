@@ -9,7 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import axios from 'axios';
+import { authService } from '../../services/auth.service'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -130,9 +130,6 @@ export default function SignUp() {
                     </Grid>
                     <Button
                         onClick={() => {
-                            const headers = {
-                                'Content-Type': 'application/json',
-                            };
                             let data = {
                                 teamName: 'Phila',
                                 userName: 'sixers',
@@ -143,14 +140,10 @@ export default function SignUp() {
                                     playerNickname: 'Black Mamba',
                                 }]
                             }
-                            axios.post('/register/sixers', data,
-                                { headers: headers }).then((res) => {
-                                    let data = res
-                                    debugger
-                                    // history.push("/home");
-                                }).catch((error) => {
-                                    // setIsOpen(true)
-                                })
+                            authService.register(data).then((res) => {
+                                let test = res
+                                debugger
+                            })
 
                         }}
                         fullWidth

@@ -17,10 +17,10 @@ const routes = [
     {
         path: '/',
         render: () => {
-            const isAuth = storageService.isAuthenticated();
-            if (!isAuth) {
-                return <Redirect to="/login"> </Redirect>;
-            }
+            // const isAuth = storageService.isAuthenticated();
+            // if (!isAuth) {
+            //     return <Redirect to="/login"> </Redirect>;
+            // }
             return renderRoutes(privateRoutes);
         },
     },

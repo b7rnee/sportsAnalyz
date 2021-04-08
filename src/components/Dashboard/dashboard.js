@@ -25,8 +25,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import { mainListItems } from '../Header/listitems';
 import axios from 'axios'
+import { dashboardService } from '../../services/dashboard.service'
 import Analyz from '../Analyz/analyz';
 
 import PlayerList from '../PlayerList/playerList';
@@ -112,7 +112,7 @@ export default function Dashboard() {
     const [playerInfo, setPlayerInfo] = React.useState(new Array())
     const [loading, setLoading] = React.useState(false)
     useEffect(() => {
-        fetch('/api').then((res) => {
+        fetch('/players').then((res) => {
             if (res.ok) {
                 return res.json()
             }
@@ -126,9 +126,9 @@ export default function Dashboard() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const shotChartDraw = (full_name) => {
-        setLoading(true)
-        axios.get(`/shotChartDetail/${full_name}`).then((res) => {
+    const shotChartDraw = (fullName) => {
+        setLoading(true);
+        dashboardService.getShotChart(fullName).then((res) => {
             let test = res.data.url;
             let info = JSON.parse(res.data.info)
             let i = Object.keys(info.SEASON_ID).find((el, index) => {

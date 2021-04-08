@@ -17,6 +17,8 @@ import axios from 'axios';
 import { AuthContext } from './AuthContext'
 import { Alert } from '@material-ui/lab'
 import { ACTIONS } from '../../actions';
+import { authService } from '../../services/auth.service'
+import { storageService } from '../../services/storage.service'
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -67,9 +69,11 @@ export default function Login() {
         });
         if (tmp) return
         dispatch({ type: ACTIONS.BLOCK })
-        axios.get(`/login/${values.username}/${values.password}`).then((res) => {
-            history.push("/home");
 
+        authService.login(values).then((res) => {
+            history.push("/home")
+            // let authData = { isAuthenticated: true }
+            // storageService.setAuth(authData)})
         }).catch((error) => {
             setIsOpen(true)
 

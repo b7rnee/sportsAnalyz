@@ -45,7 +45,7 @@ def register(username):
             return "succes"
         return "That user already exists"
 
-@app.route('/api', methods=['GET'])
+@app.route('/players', methods=['GET'])
 def index():
     return json.dumps(players.get_active_players())
 

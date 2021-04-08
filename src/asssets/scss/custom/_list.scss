@@ -34,4 +34,18 @@
   align-items: center;
   justify-content: center;
   height: 550px;
+  .upload-file-btn {
+    margin-top: 40px;
+    background-color: #25d56f;
+    color: #fff;
+    &:hover {
+      background-color: #6be39d;
+    }
+  }
+
+  .file-info {
+    span {
+      font-size: 18px;
+    }
+  }
 }
