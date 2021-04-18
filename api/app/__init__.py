@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from flask import Flask, request
 import json
 import numpy as np
+import pandas as pd
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats,playervsplayer
 from nba_api.stats.endpoints import shotchartdetail
@@ -44,6 +45,12 @@ def register(username):
             users.insert_one(request.json)
             return "succes"
         return "That user already exists"
+
+@app.route('/predict', methods = ['GET'])
+def predict():
+    df = pd.read_csv(request.files.get('file'))
+
+
 
 @app.route('/players', methods=['GET'])
 def index():

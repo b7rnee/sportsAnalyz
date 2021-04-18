@@ -14,13 +14,14 @@ const ShotChart = (props) => {
                             <img style={{ marginTop: 15 }} src={sourceImage} />
                         </div>
                         <div className="shot-chart">
-                            <span>
+                            <span style={{ color: '#0000008A', fontWeight: 'bold' }}>
+
                                 Амжилтгүй шидэлт
                             </span >
                             <div id="orangeBox">
                                 <span id="x">X</span>
                             </div>
-                            <span>
+                            <span style={{ color: '#0000008A', fontWeight: 'bold' }}>
                                 Амжилттай шидэлт
                             </span>
                             <div style={{ borderRadius: 25, width: 25, height: 25, backgroundColor: '#25d56f' }}></div>

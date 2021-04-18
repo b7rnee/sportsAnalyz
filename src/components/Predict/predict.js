@@ -1,31 +1,36 @@
 import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
+import {
+    Typography,
+    List,
+    CssBaseline,
+    Drawer,
+    Toolbar,
+    Button,
+    Container,
+    ListItemIcon,
+    ListItem,
+    ListItemText,
+    Box,
+    AppBar,
+    Grid,
+    Paper,
+    IconButton,
+    Link,
+    Divider,
+    Badge,
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import Button from '@material-ui/core/Button'
 import ReactFileReader from 'react-file-reader'
 import { AuthContext } from '../Login/AuthContext';
 import { ACTIONS } from '../../actions';
+import { dashboardService } from '../../services/dashboard.service';
+import Graphic from './graphic';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -110,6 +115,11 @@ export default function Predict() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+    const predict = () => {
+        dispatch({ type: ACTIONS.BLOCK })
+        dashboardService.predictData().then(() => {
+        }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }));
+    }
 
     return (
         <div className={classes.root}>
@@ -169,46 +179,59 @@ export default function Predict() {
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={8} lg={9}>
-                            <Paper style={{
-                                display: 'flex',
-                                justifyContent: "space-between",
-                                flexDirection: 'column'
-                            }} className="paper">
-                                <img width={730} height={420}
-                                    src="http://www.bleathem.ca/patternfly-org/pattern-library/data-visualization/line-chart/img/line-chart.png"></img>
-                                <div width={50} height={50}>Result</div>
-                            </Paper>
+                <div className="container">
 
-                        </Grid>
-                        <Grid item xs={12} md={4} lg={3}>
-                            <Paper className="paper" >
-                                <div className="file-info">
-                                    <span className="file-name">Filename: {fileData?.name}</span>
-                                </div>
-                                <Button onClick={() => {
-                                    dispatch({ type: ACTIONS.BLOCK })
-                                }} className="upload-file-btn">
-                                    Predict
+                    <Box
+                        sx={{
+                            backgroundColor: 'background.default',
+                            minHeight: '100%',
+                            py: 3
+                        }}
+                    >
+                        <Container maxWidth={false} className={classes.container}>
+                            <Grid container spacing={2}>
+                                <Grid
+                                    item
+                                    lg={8}
+                                    md={12}
+                                    xl={9}
+                                    xs={12}
+                                >
+                                    <Graphic sx={{ height: '100%' }} />
+                                </Grid>
+                                <Grid
+                                    item
+                                    lg={4}
+                                    md={6}
+                                    xl={3}
+                                    xs={12}
+                                >
+                                    <Paper className="paper" style={{ height: 528 }} >
+                                        <div className="file-info">
+                                            <span className="file-name">Filename: {fileData?.name}</span>
+                                        </div>
+                                        <Button onClick={() => {
+                                            predict()
+                                        }} className="upload-file-btn">
+                                            Predict
                                     </Button>
-                                <ReactFileReader fileTypes={[".csv", ".xlsx"]} base64={true} handleFiles={(file) => {
-                                    setFileData(file.fileList[0])
-                                }}>
-                                    <Button className="upload-file-btn">
-                                        File upload section
+                                        <ReactFileReader fileTypes={[".csv", ".xlsx"]} base64={true} handleFiles={(file) => {
+                                            setFileData(file.fileList[0])
+                                        }}>
+                                            <Button className="upload-file-btn">
+                                                File upload section
                                     </Button>
-                                </ReactFileReader >
+                                        </ReactFileReader >
+                                    </Paper>
+                                </Grid>
 
+                            </Grid>
 
+                        </Container>
+                    </Box>
+                </div>
 
-                            </Paper>
-                        </Grid>
-                    </Grid>
-
-                </Container>
             </main>
-        </div>
+        </div >
     );
 }

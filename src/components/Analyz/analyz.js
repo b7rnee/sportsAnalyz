@@ -1,53 +1,130 @@
-import React from 'react';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Title from '../Header/title';
+import { Doughnut } from 'react-chartjs-2';
+import {
+    Box,
+    Card,
+    CardContent,
+    CardHeader,
+    Divider,
+    Typography,
+    colors,
+    useTheme
+} from '@material-ui/core';
 
-function preventDefault(event) {
-    event.preventDefault();
-}
 
-const useStyles = makeStyles({
-    depositContext: {
-        flex: 1,
-    },
-});
+const TrafficByDevice = (props) => {
+    const theme = useTheme();
+    const getPercent = () => {
+        return props.info[2] * 100 / props.info[1]
+    }
+    const data = {
+        datasets: [
+            {
+                data: [getPercent(), 100 - getPercent()],
+                backgroundColor: [
+                    '#25d56f',
+                    '#3f51b5',
+                ],
+                borderWidth: 8,
+                borderColor: colors.common.white,
+                hoverBorderColor: colors.common.white
+            }
+        ],
+        labels: ['Амжилттай шидэлтийн тоо', 'Амжилтгүй шидэлтийн тоо']
+    };
 
-export default function Analyz(props) {
-    const classes = useStyles();
-    const [info, setInfo] = React.useState([]);
-    React.useEffect(() => {
-        setInfo(props.info)
-    }, [props]);
+    const options = {
+        animation: false,
+        cutoutPercentage: 80,
+        layout: { padding: 0 },
+        legend: {
+            display: false
+        },
+        maintainAspectRatio: false,
+        responsive: true,
+        tooltips: {
+            backgroundColor: theme.palette.background.paper,
+            bodyFontColor: theme.palette.text.secondary,
+            borderColor: theme.palette.divider,
+            borderWidth: 1,
+            enabled: true,
+            footerFontColor: theme.palette.text.secondary,
+            intersect: false,
+            mode: 'index',
+            titleFontColor: theme.palette.text.primary
+        }
+    };
+
+    const devices = [
+        {
+            title: 'Амжилттай шидэлтийн хувь',
+            value: getPercent(),
+            color: '#25d56f',
+        },
+        {
+            title: 'Амжилтгүй шидэлтийн хувь',
+            value: 100 - getPercent(),
+            color: '#3f51b5'
+        },
+    ];
+
     return (
-        <React.Fragment>
-            <Title>2019-20 оны статистик</Title>
-            <Typography component="p" variant="h6">
-                PTS: {props?.info[0]}
-            </Typography>
-            <Typography style={{ marginTop: 30 }} component="p" variant="h6">
-                FGA: {props?.info[1]}
-            </Typography>
-            <Typography style={{ marginTop: 30 }} component="p" variant="h6">
-                FGM: {props?.info[2]}
-            </Typography>
-            <Typography style={{ marginTop: 30 }} component="p" variant="h6">
-                FG_PCT: {props?.info[3]}%
-            </Typography>
-            <Typography style={{ marginTop: 30 }} component="p" variant="h6">
-                FG3A: {props?.info[4]}
-            </Typography>
-            <Typography style={{ marginTop: 30 }} component="p" variant="h6">
-                FG3M: {props?.info[5]}
-            </Typography>
-            <Typography style={{ marginTop: 30 }} component="p" variant="h6">
-                FG3_PCT: {props?.info[6]}
-            </Typography>
+        <Card {...props}>
+            <CardHeader title='Довтолгооны статистик' />
+            <Divider />
+            <CardContent>
+                <div className="progress-container">
+                    <Box
+                        sx={{
+                            height: 300,
+                            position: 'relative'
+                        }}
+                    >
+                        <Doughnut
+                            data={data}
+                            options={options}
+                        />
+                    </Box>      </div>
 
-
-            <div>
-            </div>
-        </React.Fragment>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        pt: 2
+                    }}
+                >
+                    {devices.map(({
+                        color,
+                        icon: Icon,
+                        title,
+                        value
+                    }) => (
+                        <Box
+                            key={title}
+                            sx={{
+                                p: 1,
+                                textAlign: 'center'
+                            }}
+                            style={{ flexWrap: 1 }}
+                        >
+                            <Typography
+                                color="textSecondary"
+                                style={{ fontWeight: 'bold' }}
+                                variant="body1"
+                            >
+                                {title}
+                            </Typography>
+                            <Typography
+                                variant="h2"
+                                style={{ fontSize: 22, fontWeight: 'bold', color: color }}
+                            >
+                                {value.toFixed(1)}%
+                            </Typography>
+                        </Box>
+                    ))}
+                </Box>
+            </CardContent>
+        </Card>
     );
-}
+};
+
+export default TrafficByDevice;

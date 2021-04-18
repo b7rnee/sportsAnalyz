@@ -8,7 +8,12 @@ const getShotChart = (fullName) => {
     return api.get(`/shotChartDetail/${fullName}`)
 };
 
+const predictData = () => {
+    return api.get('/predict');
+}
+
 export const dashboardService = {
     getPlayers,
     getShotChart,
+    predictData
 };

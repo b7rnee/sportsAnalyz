@@ -5,21 +5,20 @@ import Title from '../Header/title';
 
 export default function PlayerList(props) {
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'first_name', headerName: 'First name', width: 130 },
-        { field: 'last_name', headerName: 'Last name', width: 130 },
+        { field: 'id', headerName: 'ID', width: 200 },
+        { field: 'first_name', headerName: 'First name', width: 400 },
+        { field: 'last_name', headerName: 'Last name', width: 400 },
         {
             field: 'is_active',
             headerName: 'Is active',
-            type: 'number',
-            width: 90,
+            width: 200,
         },
         {
             field: 'full_name',
             headerName: 'Full name',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 160,
+            width: 300,
         },
     ];
     return (

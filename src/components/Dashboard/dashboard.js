@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,7 +16,6 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
-import { CircularProgress } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import ShotChart from '../Chart/shotChart';
@@ -25,11 +24,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import axios from 'axios'
 import { dashboardService } from '../../services/dashboard.service'
 import Analyz from '../Analyz/analyz';
-
-import PlayerList from '../PlayerList/playerList';
+import { AuthContext } from '../Login/AuthContext';
+import { ACTIONS } from '../../actions';
+import TotalStatistic from './statistic';
+import PctProgress from './pct';
+import PlayerList from '../PlayerList/index';
 
 const drawerWidth = 240;
 
@@ -110,14 +111,14 @@ export default function Dashboard() {
     const [players, setPlayers] = React.useState([]);
     const [sourceImage, setSrcImage] = useState("");
     const [playerInfo, setPlayerInfo] = React.useState(new Array())
-    const [loading, setLoading] = React.useState(false)
+    const { state, dispatch } = useContext(AuthContext);
     useEffect(() => {
         fetch('/players').then((res) => {
             if (res.ok) {
                 return res.json()
             }
         }).then((res) => {
-            setPlayers(res)
+            setPlayers(res?.slice(0, 5))
         })
     }, []);
     const handleDrawerOpen = () => {
@@ -127,7 +128,7 @@ export default function Dashboard() {
         setOpen(false);
     };
     const shotChartDraw = (fullName) => {
-        setLoading(true);
+        dispatch({ type: ACTIONS.BLOCK })
         dashboardService.getShotChart(fullName).then((res) => {
             let test = res.data.url;
             let info = JSON.parse(res.data.info)
@@ -142,9 +143,11 @@ export default function Dashboard() {
             dat.push(info.FG3A[String(i)])
             dat.push(info.FG3M[String(i)])
             dat.push(info.FG3_PCT[String(i)])
+            dat.push(info.FT_PCT[String(i)])
+            dat.push(info.MIN[String(i)])
             setPlayerInfo(dat)
             setSrcImage(test)
-        }).finally(() => setLoading(false))
+        }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }))
     }
 
     return (
@@ -204,35 +207,78 @@ export default function Dashboard() {
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={8} lg={9}>
-                            <Paper className="paper">
-                                {loading ? <CircularProgress style={{ color: "#25d56f", alignItems: 'center' }} />
-                                    : <ShotChart srcImage={sourceImage} players={players} />
-                                }
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12} md={4} lg={3}>
-                            <Paper className="paper">
-                                {loading ? <CircularProgress style={{ color: "#25d56f", alignItems: 'center' }} /> :
-                                    <Analyz info={playerInfo} />}
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                                <PlayerList
-                                    getPlayerChart={(name) => {
-                                        shotChartDraw(name)
-                                    }}
-                                    players={players} />
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                    <Box pt={4}>
+                <Box
+                    sx={{
+                        backgroundColor: 'background.default',
+                        minHeight: '100%',
+                        py: 3
+                    }}
+                >
+                    <Container maxWidth={false} className={classes.container}>
+                        <Grid container spacing={3}>
+                            <Grid
+                                item
+                                lg={3}
+                                sm={6}
+                                xl={3}
+                                xs={12}
+                            >
+                                <TotalStatistic text="Нийт авсан оноо" value={playerInfo[0]} />
+                            </Grid>
+                            <Grid
+                                item
+                                lg={3}
+                                sm={6}
+                                xl={3}
+                                xs={12}
+                            >
+                                <TotalStatistic text="Нийт тоглосон минут" value={playerInfo[8]} />
+                            </Grid>
+                            <Grid
+                                item
+                                lg={3}
+                                sm={6}
+                                xl={3}
+                                xs={12}
+                            >
+                                <PctProgress text="3-ын зайн шидэлтийн хувь" percent={playerInfo[6] * 100} />
+                            </Grid>
+                            <Grid
+                                item
+                                lg={3}
+                                sm={6}
+                                xl={3}
+                                xs={12}
+                            >
+                                <PctProgress text="Торгуулын шидэлтийн хувь" percent={playerInfo[7] * 100} />
+                            </Grid>
+                            <Grid item xs={12} md={8} lg={9}>
+                                <Paper className="paper">
+                                    <ShotChart srcImage={sourceImage} players={players} />
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={4} lg={3}>
 
-                    </Box>
-                </Container>
+                                <Analyz info={playerInfo} />
+
+                            </Grid>
+                            <Grid
+                                item
+                                lg={8}
+                                md={12}
+                                xl={12}
+                                xs={15}
+                            >
+                                <PlayerList getPlayerChart={(name) => {
+                                    shotChartDraw(name)
+                                }}
+                                    players={players} sx={{ height: '100%' }} />
+                            </Grid>
+
+                        </Grid>
+
+                    </Container>
+                </Box>
             </main>
         </div>
     );
