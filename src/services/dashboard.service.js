@@ -8,6 +8,10 @@ const getShotChart = (fullName) => {
     return api.get(`/shotChartDetail/${fullName}`)
 };
 
+const getHotZone = (fullName) => {
+    return api.get(`/hotZoneChart/${fullName}`)
+};
+
 const predictData = () => {
     return api.get('/predict');
 }
@@ -15,5 +19,6 @@ const predictData = () => {
 export const dashboardService = {
     getPlayers,
     getShotChart,
-    predictData
+    predictData,
+    getHotZone
 };

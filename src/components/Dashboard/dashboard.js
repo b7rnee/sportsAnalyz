@@ -110,6 +110,7 @@ export default function Dashboard() {
     const [open, setOpen] = React.useState(true);
     const [players, setPlayers] = React.useState([]);
     const [sourceImage, setSrcImage] = useState("");
+    const [sourceHotZone, setSrcHotZone] = useState("");
     const [playerInfo, setPlayerInfo] = React.useState(new Array())
     const { state, dispatch } = useContext(AuthContext);
     useEffect(() => {
@@ -121,6 +122,8 @@ export default function Dashboard() {
             setPlayers(res?.slice(0, 5))
         })
     }, []);
+
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -133,7 +136,7 @@ export default function Dashboard() {
             let test = res.data.url;
             let info = JSON.parse(res.data.info)
             let i = Object.keys(info.SEASON_ID).find((el, index) => {
-                return info.SEASON_ID[String(index)] == '2019-20'
+                return info.SEASON_ID[String(index)] == '2020-21'
             })
             let dat = [];
             dat.push(info.PTS[String(i)])
@@ -147,7 +150,10 @@ export default function Dashboard() {
             dat.push(info.MIN[String(i)])
             setPlayerInfo(dat)
             setSrcImage(test)
-        }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }))
+            dashboardService.getHotZone(fullName).then((res)=>{
+                setSrcHotZone(res.data.url)
+            }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }))
+        }).catch(() => dispatch({ type: ACTIONS.UNBLOCK }))
     }
 
     return (
@@ -254,7 +260,7 @@ export default function Dashboard() {
                             </Grid>
                             <Grid item xs={12} md={8} lg={9}>
                                 <Paper className="paper">
-                                    <ShotChart srcImage={sourceImage} players={players} />
+                                    <ShotChart srcHotZone={sourceHotZone} srcImage={sourceImage} players={players} />
                                 </Paper>
                             </Grid>
                             <Grid item xs={12} md={4} lg={3}>

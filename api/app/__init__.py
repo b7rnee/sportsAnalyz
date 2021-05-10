@@ -12,7 +12,7 @@ import io
 import base64
 from flask_pymongo import PyMongo
 from bson import ObjectId
-
+import matplotlib as mpl
 
 app = Flask(__name__)
 
@@ -43,7 +43,7 @@ def register(username):
         if register_user is None:
             print("JSON",request)
             users.insert_one(request.json)
-            return "succes"
+            return "success"
         return "That user already exists"
 
 @app.route('/predict', methods = ['GET'])
@@ -57,7 +57,7 @@ def index():
     return json.dumps(players.get_active_players())
 
 
-def get_player_shortchartdetail(player_name, season_id):
+def get_player_shortchartdetail(player_name, season_id,type):
     nba_players = players.get_active_players()
     player_dict = list(
         filter(lambda name: name['full_name'] == player_name, nba_players))
@@ -69,7 +69,7 @@ def get_player_shortchartdetail(player_name, season_id):
                                                     player_id=player_dict[0]['id'],
                                                     season_type_all_star="Regular Season",
                                                     season_nullable=season_id,
-                                                    context_measure_simple="FGA",
+                                                    context_measure_simple=type,
                                                     ).get_data_frames()
     return shotchartlist[0],career_df;
     
@@ -78,7 +78,7 @@ def get_player_shortchartdetail(player_name, season_id):
 
 @app.route('/shotChartDetail/<string:full_name>', methods=['GET'])
 def get_shot_detail(full_name):
-    playerStat,career = get_player_shortchartdetail(full_name, '2019-20')
+    playerStat,career = get_player_shortchartdetail(full_name, '2020-21','FGA')
     plt.clf()
     shot_chart(playerStat , title = full_name)
     img = io.BytesIO()
@@ -93,6 +93,22 @@ def get_shot_detail(full_name):
     img.truncate(0)
     return {"url" : "data:image/png;base64,{}".format(plot_url),"info":career.to_json()}
 
+@app.route('/hotZoneChart/<string:full_name>', methods=['GET'])
+def get_hotZone_detail(full_name):
+    playerStat,career = get_player_shortchartdetail(full_name, '2020-21','PTS')
+    plt.clf()
+    hotZone_chart(playerStat , title = full_name)
+    img = io.BytesIO()
+    plt.rcParams['figure.figsize'] = (12,11)
+    line_1 = plt.plot()
+    plt.savefig(img, format='png')
+    if len(line_1) > 0:
+        line = line_1.pop(0)
+        line.remove()
+    plot_url = base64.b64encode(img.getvalue()).decode()
+    img.seek(0)
+    img.truncate(0)
+    return {"url" : "data:image/png;base64,{}".format(plot_url),"info":career.to_json()}
 
 
 def shot_chart(data,title="", color="b", cmap=None,
@@ -114,7 +130,7 @@ def shot_chart(data,title="", color="b", cmap=None,
         ax.set_ylim(ylim[::-1])
 
     ax.tick_params(labelbottom="off", labelleft="off")
-    ax.set_title(title, fontsize=18)
+
 
     draw_court(ax, color=court_color, lw=court_lw, outer_lines=outer_lines)
     
@@ -123,20 +139,16 @@ def shot_chart(data,title="", color="b", cmap=None,
     
     x_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_X']
     y_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_Y']
-    color_map = plt.cm.Spectral_r
 
-    # ax.hexbin(x_missed,y_missed,mincnt=1,gridsize=50,color="#5A7A7F", cmap=color_map)
     ax.scatter(x_missed,y_missed, c='#12275e', marker="x",s =60, linewidths = 2)
     ax.scatter(x_made,y_made,c='#3afc8e', marker="o",s =40, linewidths = 2)
 
-    # 
-    # ax.hexbin(x_made,y_made,mincnt=1,gridsize=50,color="#3afc8e", cmap=color_map)
-    
+
  
     for spine in ax.spines:
         ax.spines[spine].set_lw(court_lw)
         ax.spines[spine].set_color(court_color)
-
+    ax.text(0, 1.05,title + '\nRegular Season 2020-21', transform=ax.transAxes, ha='left', va='baseline')
     return ax
 
 def draw_court(ax=None, color='gray', lw=1, outer_lines=False):
@@ -190,6 +202,44 @@ def draw_court(ax=None, color='gray', lw=1, outer_lines=False):
         ax.add_patch(element)
 
     return ax
+
+
+def hotZone_chart(data,title="", color="b", cmap=None,
+               xlim=(-250, 250), ylim=(422.5, -47.5),
+               court_color="gray", court_lw=1, outer_lines=False,
+               flip_court=False,gridsize=None, ax=None,
+               despine=False ):
+
+
+    if ax is None:
+        ax = plt.gca()
+
+    if cmap is None:
+        cmap = sns.light_palette(color, as_cmap=True)
+
+    if not flip_court:
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+    else:
+        ax.set_xlim(xlim[::-1])
+        ax.set_ylim(ylim[::-1])
+
+    ax.tick_params(labelbottom="off", labelleft="off")
+# Draw court
+    draw_court(ax, color=court_color, lw=court_lw, outer_lines=outer_lines)
+    
+
+
+    ax.hexbin(data['LOC_X'], data['LOC_Y'] , gridsize=(30, 30), extent=(-300, 300, 0, 940), bins='log', cmap='Blues')
+
+# Annotate player name and season
+    ax.text(0, 1.05, title + '\nRegular Season 2020-21', transform=ax.transAxes, ha='left', va='baseline')
+
+
+
+    return ax
+
+
 
 
 if __name__ == '__main__':

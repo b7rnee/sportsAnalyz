@@ -117,9 +117,33 @@ export default function Predict() {
     };
     const predict = () => {
         dispatch({ type: ACTIONS.BLOCK })
-        dashboardService.predictData().then(() => {
-        }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }));
+        dispatch({ type: ACTIONS.UNBLOCK })
+       
     }
+
+    const base64ToBlob = (base64Data) => {
+    const byteString = atob(base64Data);
+    const byteNumbers = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(byteNumbers);
+  
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([byteNumbers], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+  };
+
+    
+    const getTemplateUrl = () => {
+        const url = `/test.xlsx`;
+        const base = `UEVSSU9ELEFDVElPTl9UWVBFLFNIT1RfVFlQRSxTSE9UX1pPTkVfQkFTSUMsU0hPVF9aT05FX0FS
+        RUEsU0hPVF9aT05FX1JBTkdFLFNIT1RfRElTVEFOQ0UsTE9DX1gsTE9DX1ksU0hPVF9NQURFX0ZM
+        QUcsSFRNLFZUTQo=`
+        const blob = base64ToBlob(base);
+      
+        return url;
+      };
 
     return (
         <div className={classes.root}>
@@ -207,6 +231,11 @@ export default function Predict() {
                                     xs={12}
                                 >
                                     <Paper className="paper" style={{ height: 528 }} >
+                                    <Button onClick={() => {
+                                            getTemplateUrl()
+                                        }} className="upload-file-btn">
+                                            Загвар татах
+                                    </Button>
                                         <div className="file-info">
                                             <span className="file-name">Filename: {fileData?.name}</span>
                                         </div>
