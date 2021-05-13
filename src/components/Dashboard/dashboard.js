@@ -156,6 +156,14 @@ export default function Dashboard() {
         }).catch(() => dispatch({ type: ACTIONS.UNBLOCK }))
     }
 
+    const predict = (data) => {
+        dispatch({ type: ACTIONS.BLOCK })
+        dashboardService.predictData(data).then((res) => {
+            let test = res.data.url;
+            setSrcImage(test)
+        }).finally(() => dispatch({ type: ACTIONS.UNBLOCK }))
+    }
+
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -260,7 +268,7 @@ export default function Dashboard() {
                             </Grid>
                             <Grid item xs={12} md={8} lg={9}>
                                 <Paper className="paper">
-                                    <ShotChart srcHotZone={sourceHotZone} srcImage={sourceImage} players={players} />
+                                    <ShotChart predict={(data)=>{predict(data)}} srcHotZone={sourceHotZone} srcImage={sourceImage} players={players} />
                                 </Paper>
                             </Grid>
                             <Grid item xs={12} md={4} lg={3}>

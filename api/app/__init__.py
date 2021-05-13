@@ -4,16 +4,17 @@ import json
 import numpy as np
 import pandas as pd
 from nba_api.stats.static import players
-from nba_api.stats.endpoints import playercareerstats,playervsplayer
+from nba_api.stats.endpoints import playercareerstats
 from nba_api.stats.endpoints import shotchartdetail
 from matplotlib.patches import Circle, Rectangle, Arc
 import seaborn as sns
 import io
+import category_encoders as ce
 import base64
 from flask_pymongo import PyMongo
-from bson import ObjectId
-import matplotlib as mpl
-
+from sklearn.preprocessing import LabelEncoder
+import joblib
+from sklearn import preprocessing
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'sports_analyz';
@@ -46,9 +47,59 @@ def register(username):
             return "success"
         return "That user already exists"
 
-@app.route('/predict', methods = ['GET'])
+@app.route('/predict', methods = ['POST','GET'])
 def predict():
-    df = pd.read_csv(request.files.get('file'))
+    train = pd.read_csv('shotChartData.csv');
+    label = 'SHOT_MADE_FLAG'
+
+    le = LabelEncoder()
+    le.fit(train['SHOT_TYPE'].astype(str))
+    train['SHOT_TYPE'] = le.transform(train['SHOT_TYPE'].astype(str))
+
+    le.fit(train['ACTION_TYPE'].astype(str))
+    train['ACTION_TYPE'] = le.transform(train['ACTION_TYPE'].astype(str))
+
+    le.fit(train['SHOT_ZONE_BASIC'].astype(str))
+    train['SHOT_ZONE_BASIC'] = le.transform(train['SHOT_ZONE_BASIC'].astype(str))
+
+    le.fit(train['SHOT_ZONE_AREA'].astype(str))
+    train['SHOT_ZONE_AREA'] = le.transform(train['SHOT_ZONE_AREA'].astype(str))
+
+    le.fit(train['SHOT_ZONE_RANGE'].astype(str))
+    train['SHOT_ZONE_RANGE'] = le.transform(train['SHOT_ZONE_RANGE'].astype(str))
+
+    le.fit(train['LOC_X'].astype(str))
+    train['LOC_X'] = le.transform(train['LOC_X'].astype(str))
+
+    le.fit(train['LOC_Y'].astype(str))
+    train['LOC_Y'] = le.transform(train['LOC_Y'].astype(str))
+
+    le.fit(train['HTM'].astype(str))
+    train['HTM'] = le.transform(train['HTM'].astype(str))
+
+    le.fit(train['VTM'].astype(str))
+    train['VTM'] = le.transform(train['VTM'].astype(str))
+
+    x = np.array(train.drop([label],1))
+
+    min_max_scaler = preprocessing.MinMaxScaler(feature_range =(0, 1))
+    x_data = min_max_scaler.fit_transform(x)
+    model = joblib.load('svmModel.pkl');
+    result = model.predict(x_data);
+    train['SHOT_MADE_FLAG'] = result;
+    plt.clf()
+    shot_chart(train , title = 'Таамагласан утга')
+    img = io.BytesIO()
+    plt.rcParams['figure.figsize'] = (12,11)
+    line_1 = plt.plot()
+    plt.savefig(img, format='png')
+    if len(line_1) > 0:
+        line = line_1.pop(0)
+        line.remove()
+    plot_url = base64.b64encode(img.getvalue()).decode()
+    img.seek(0)
+    img.truncate(0)
+    return {"url" : "data:image/png;base64,{}".format(plot_url)}
 
 
 
@@ -134,11 +185,11 @@ def shot_chart(data,title="", color="b", cmap=None,
 
     draw_court(ax, color=court_color, lw=court_lw, outer_lines=outer_lines)
     
-    x_missed = data[data['EVENT_TYPE'] == 'Missed Shot']['LOC_X']
-    y_missed = data[data['EVENT_TYPE'] == 'Missed Shot']['LOC_Y']
+    x_missed = data[data['SHOT_MADE_FLAG'] == 0]['LOC_X']
+    y_missed = data[data['SHOT_MADE_FLAG'] == 0]['LOC_Y']
     
-    x_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_X']
-    y_made = data[data['EVENT_TYPE'] == 'Made Shot']['LOC_Y']
+    x_made = data[data['SHOT_MADE_FLAG'] == 1]['LOC_X']
+    y_made = data[data['SHOT_MADE_FLAG'] == 1]['LOC_Y']
 
     ax.scatter(x_missed,y_missed, c='#12275e', marker="x",s =60, linewidths = 2)
     ax.scatter(x_made,y_made,c='#3afc8e', marker="o",s =40, linewidths = 2)

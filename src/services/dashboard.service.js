@@ -12,8 +12,10 @@ const getHotZone = (fullName) => {
     return api.get(`/hotZoneChart/${fullName}`)
 };
 
-const predictData = () => {
-    return api.get('/predict');
+const predictData = (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.post('/predict',formData);
 }
 
 export const dashboardService = {
